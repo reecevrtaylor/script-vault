@@ -38,7 +38,17 @@ function show_types {
     echo
 }
 
-clear
+echo -ne "Have you staged your changes? (${YELLOW}y${RESET}/${BLUE}n${RESET}): "
+read staged
+if [[ "$staged" == "n" || "$staged" == "N" ]]; then
+    echo -ne "Would you like to stage changes now? (${YELLOW}y${RESET}/${BLUE}n${RESET}): "
+    read stage_now
+    if [[ "$stage_now" == "y" || "$stage_now" == "Y" ]]; then
+        git add .
+        echo -e "${GREEN}Changes staged.${RESET}"
+    fi
+fi
+
 while true; do
     show_types
     echo -ne "${BLUE}Select type (num/name)${RESET}, or ${RED}'q'${RESET} to quit: "
@@ -93,7 +103,15 @@ while true; do
     read confirm
     if [ -z "$confirm" ]; then
         git commit -m "$commit_type: $commit_msg"
+        # Push changes
+        echo -ne "Would you like to push your changes now? (${YELLOW}y${RESET}/${BLUE}n${RESET}): "
+        read push_now
+        if [[ "$push_now" == "y" || "$push_now" == "Y" ]]; then
+            git push
+            echo -e "${GREEN}Changes pushed.${RESET}"
+        fi
         exit 0
+
     elif [ "$confirm" == "m" ]; then
         clear
         continue
